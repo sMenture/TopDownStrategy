@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-[RequireComponent (typeof(FortUI))]
+[RequireComponent (typeof(FortResourceUI))]
 [RequireComponent (typeof(FortVisor))]
 [RequireComponent (typeof(FortTaskDispatcher))]
 [RequireComponent (typeof(FortWarehouse))]
@@ -10,7 +10,7 @@ public class Fort : MonoBehaviour
     [SerializeField] private Bot bot;
     [SerializeField] private Item item;
 
-    private FortUI _ui;
+    private FortResourceUI _ui;
     private FortVisor _fortVisor;
     private FortWarehouse _warehouse;
     private FortTaskDispatcher _taskDispatcher;
@@ -22,7 +22,7 @@ public class Fort : MonoBehaviour
         _taskDispatcher = GetComponent<FortTaskDispatcher>();
         _warehouse = GetComponent<FortWarehouse>();
         _fortVisor = GetComponent<FortVisor>();
-        _ui = GetComponent<FortUI>();
+        _ui = GetComponent<FortResourceUI>();
     }
 
     private void OnEnable()

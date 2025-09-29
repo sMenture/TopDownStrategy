@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-public class FortUI : MonoBehaviour
+public class FortResourceUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _textCount;
 

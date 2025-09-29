@@ -10,16 +10,16 @@ public class FortVisor : MonoBehaviour
     public List<Item> Search()
     {
         Collider[] colliders = Physics.OverlapSphere(transform.position, _radius, _itemMask);
-        List<Item> _suitableItems = new List<Item>();
+        List<Item> suitableItems = new List<Item>();
 
         foreach (var collider in colliders)
         {
             if(collider.TryGetComponent(out Item item))
             {
-                _suitableItems.Add(item);
+                suitableItems.Add(item);
             }
         }
 
-        return _suitableItems;
+        return suitableItems;
     }
 }
