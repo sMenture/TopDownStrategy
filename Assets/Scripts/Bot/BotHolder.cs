@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class BotHolder : MonoBehaviour
 {
-    [SerializeField] private Vector3 handPosition;
+    [SerializeField] private Vector3 _handPosition;
 
     public Item SelectedItem { get; private set; }
 
@@ -11,7 +11,7 @@ public class BotHolder : MonoBehaviour
         SelectedItem = selectedItem;
 
         SelectedItem.transform.SetParent(transform);
-        SelectedItem.transform.localPosition = handPosition;
+        SelectedItem.transform.localPosition = _handPosition;
     }
 
     public Item GiveItem()
