@@ -5,6 +5,8 @@ using UnityEngine;
 public class FortTaskDispatcher : MonoBehaviour
 {
     [SerializeField] private List<Bot> _bots = new List<Bot>();
+
+    private TaskAssignmentManager _taskAssignmentManager;
     private FortWarehouse _warehouse;
 
     private Flag _flag;
@@ -28,6 +30,8 @@ public class FortTaskDispatcher : MonoBehaviour
     public void Initialized(FortWarehouse warehouse)
     {
         _warehouse = warehouse;
+
+        _taskAssignmentManager = FindAnyObjectByType<TaskAssignmentManager>();
     }
 
     public void AddNewBot(Bot bot)
@@ -64,7 +68,7 @@ public class FortTaskDispatcher : MonoBehaviour
 
                     if (suitableItem != null)
                     {
-                        suitableItem.SetOwner(bot);
+                        _taskAssignmentManager.TryAssign(bot, suitableItem);
                         bot.UpdateTargetPosition(suitableItem);
                         bot.MoveTo(suitableItem.transform.position, BotState.MoveToItem);
                     }
@@ -121,7 +125,7 @@ public class FortTaskDispatcher : MonoBehaviour
 
         foreach (var item in items)
         {
-            if (item.Owner != null)
+            if (_taskAssignmentManager.GetAssignedBot(item))
                 continue;
 
             float distance = transform.position.SqrDistance(item.transform.position);

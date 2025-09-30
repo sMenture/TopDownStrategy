@@ -1603,6 +1603,7 @@ GameObject:
   - component: {fileID: 565118376}
   - component: {fileID: 565118379}
   - component: {fileID: 565118380}
+  - component: {fileID: 565118381}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1684,6 +1685,18 @@ MonoBehaviour:
     m_Bits: 8
   _flag: {fileID: 494114934}
   _camera: {fileID: 330585545}
+--- !u!114 &565118381
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 565118375}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6766a8368e883d14aa446a3625ee35dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &581703714
 GameObject:
   m_ObjectHideFlags: 0
@@ -3749,6 +3762,10 @@ PrefabInstance:
       propertyPath: '_bots.Array.data[2]'
       value: 
       objectReference: {fileID: 756801703}
+    - target: {fileID: 203694985429013674, guid: 048abd39900cd7b47a680ef73b93f5f6, type: 3}
+      propertyPath: _taskAssignmentManager
+      value: 
+      objectReference: {fileID: 565118381}
     - target: {fileID: 4947566077237090307, guid: 048abd39900cd7b47a680ef73b93f5f6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 12
