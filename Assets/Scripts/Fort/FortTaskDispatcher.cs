@@ -45,6 +45,7 @@ public class FortTaskDispatcher : MonoBehaviour
                     _warehouse.Remove(_flag.Price);
                     bot.MoveToFlag(_flag);
 
+                    _flag = null;
                     FinishBuild?.Invoke();
 
                     continue;
