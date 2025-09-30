@@ -14,6 +14,11 @@ public class TaskAssignmentManager : MonoBehaviour
         return true;
     }
 
+    public void Remove(Item item)
+    {
+        _assignments.Remove(item);
+    }
+
     public Bot GetAssignedBot(Item item)
     {
         _assignments.TryGetValue(item, out Bot bot);

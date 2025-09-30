@@ -86,7 +86,14 @@ public class FortTaskDispatcher : MonoBehaviour
                 break;
 
             case BotState.DeliverToWarehouse:
-                _warehouse.Add(bot.ClearItem());
+
+                Item item = bot.ClearItem();
+
+                _warehouse.Add(item);
+                _taskAssignmentManager.Remove(item);
+
+                Destroy(item.gameObject);
+
                 bot.ResetState();
                 break;
 
