@@ -20,16 +20,16 @@ public class Player : MonoBehaviour
 
     private void OnEnable()
     {
-        _inputReader.Accept += _structureCreator.Create;
-        _inputReader.Cancel += _structureCreator.CancelCreate;
+        _inputReader.Accept += _flagMover.Create;
+        _inputReader.Cancel += _flagMover.Disable;
 
         _inputReader.MousePosition += _flagMover.UpdatePosition;
     }
 
     private void OnDisable()
     {
-        _inputReader.Accept -= _structureCreator.Create;
-        _inputReader.Cancel -= _structureCreator.CancelCreate;
+        _inputReader.Accept -= _flagMover.Create;
+        _inputReader.Cancel -= _flagMover.Disable;
 
         _inputReader.MousePosition -= _flagMover.UpdatePosition;
     }

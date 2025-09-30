@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class FortAutoCreator : MonoBehaviour
+public class FortBotAutoBuilder : MonoBehaviour
 {
     private const int Price = 3;
 
@@ -22,7 +22,7 @@ public class FortAutoCreator : MonoBehaviour
         _warehouse = warehouse;
     }
 
-    public void TryCreateNew(int currentCount)
+    public void CreateNew(int currentCount)
     {
         if (AutoCreate == false)
             return;

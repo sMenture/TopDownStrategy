@@ -13,6 +13,18 @@ public class FortTaskDispatcher : MonoBehaviour
 
     public int BotCount => _bots.Count;
 
+    private void OnEnable()
+    {
+        foreach (var bot in _bots)
+            bot.TaskCompleted += MissionCompletion;
+    }
+
+    private void OnDisable()
+    {
+        foreach (var bot in _bots)
+            bot.TaskCompleted -= MissionCompletion;
+    }
+
     public void Initialized(FortWarehouse warehouse)
     {
         _warehouse = warehouse;
@@ -21,11 +33,15 @@ public class FortTaskDispatcher : MonoBehaviour
     public void AddNewBot(Bot bot)
     {
         _bots.Add(bot);
+
+        bot.TaskCompleted += MissionCompletion;
     }
 
     public void RemoveBot(Bot bot)
     {
         _bots.Remove(bot);
+
+        bot.TaskCompleted -= MissionCompletion;
     }
 
     public void DistributeTask(List<Item> items)
@@ -35,31 +51,50 @@ public class FortTaskDispatcher : MonoBehaviour
 
         foreach (var bot in _bots)
         {
-            if (bot.HaveItem() || bot.HaveFlag())
-                continue;
-
-            if (_flag != null && HaveCourier() == false)
+            if (bot.State == BotState.None)
             {
-                if (_warehouse.ItemCount >= _flag.Price)
+                if (_flag && HaveCourier() == false && _warehouse.ItemCount >= _flag.Price)
                 {
                     _warehouse.Remove(_flag.Price);
-                    bot.MoveToFlag(_flag);
+                    bot.MoveTo(_flag.transform.position, BotState.BuildFlag);
+                }
+                else
+                {
+                    Item suitableItem = FindSuitable(items);
 
-                    _flag = null;
-                    FinishBuild?.Invoke();
-
-                    continue;
+                    if (suitableItem != null)
+                    {
+                        suitableItem.SetOwner(bot);
+                        bot.UpdateTargetPosition(suitableItem);
+                        bot.MoveTo(suitableItem.transform.position, BotState.MoveToItem);
+                    }
                 }
             }
+        }
+    }
 
-            Item suitableItem = FindSuitable(items);
+    public void MissionCompletion(Bot bot)
+    {
+        switch (bot.State)
+        {
+            case BotState.MoveToItem:
+                bot.MoveTo(_warehouse.transform.position, BotState.DeliverToWarehouse);
+                break;
 
-            if (suitableItem != null)
-            {
-                suitableItem.SetOwner(bot);
-                bot.UpdateTargetPosition(suitableItem);
-                bot.ItemCollected += HandleMissionCompletion;
-            }
+            case BotState.DeliverToWarehouse:
+                _warehouse.Add(bot.ClearItem());
+                bot.ResetState();
+                break;
+
+            case BotState.BuildFlag:
+                _flag.Build(bot);
+                _flag = null;
+
+                bot.ResetState();
+
+                RemoveBot(bot);
+                FinishBuild?.Invoke();
+                break;
         }
     }
 
@@ -67,7 +102,7 @@ public class FortTaskDispatcher : MonoBehaviour
     {
         foreach (var bot in _bots)
         {
-            if (bot.HaveFlag() || bot.HaveFlag())
+            if (bot.State == BotState.None)
                 return true;
         }
 
@@ -101,20 +136,11 @@ public class FortTaskDispatcher : MonoBehaviour
         return selected;
     }
 
-    private void HandleMissionCompletion(Bot bot)
-    {
-        bot.ItemCollected -= HandleMissionCompletion;
-
-        bot.UpdateWarehousePosition(_warehouse);
-    }
-
     private bool HaveCourier()
     {
         foreach (var bot in _bots)
-        {
-            if (bot.HaveFlag())
+            if(bot.State == BotState.BuildFlag)
                 return true;
-        }
 
         return false;
     }

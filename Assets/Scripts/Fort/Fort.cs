@@ -3,7 +3,7 @@ using System.Collections;
 using UnityEngine;
 
 [RequireComponent (typeof(FortVisor))]
-[RequireComponent (typeof(FortAutoCreator))]
+[RequireComponent (typeof(FortBotAutoBuilder))]
 [RequireComponent (typeof(FortWarehouse))]
 [RequireComponent (typeof(FortResourceUI))]
 [RequireComponent (typeof(FortTaskDispatcher))]
@@ -12,7 +12,7 @@ public class Fort : MonoBehaviour
     [SerializeField] private ClickHandler _clickHandler;
 
     private FortVisor _visor;
-    private FortAutoCreator _creator;
+    private FortBotAutoBuilder _creator;
     private FortWarehouse _warehouse;
     private FortResourceUI _resourceUI;
     private FortTaskDispatcher _taskDispatcher;
@@ -26,7 +26,7 @@ public class Fort : MonoBehaviour
     private void Awake()
     {
         _visor = GetComponent<FortVisor>();
-        _creator = GetComponent<FortAutoCreator>();
+        _creator = GetComponent<FortBotAutoBuilder>();
         _warehouse = GetComponent<FortWarehouse>();
         _resourceUI = GetComponent<FortResourceUI>();
         _taskDispatcher = GetComponent<FortTaskDispatcher>();
@@ -40,7 +40,7 @@ public class Fort : MonoBehaviour
         _taskDispatcher.FinishBuild += _creator.EnableAutoCreate;
         _clickHandler.OnClick += ClickReceived;
         _warehouse.ChangeCount += _resourceUI.ChangeText;
-        _warehouse.ChangeCount += _creator.TryCreateNew;
+        _warehouse.ChangeCount += _creator.CreateNew;
     }
 
     private void OnDisable()
@@ -48,7 +48,7 @@ public class Fort : MonoBehaviour
         _taskDispatcher.FinishBuild -= _creator.EnableAutoCreate;
         _clickHandler.OnClick -= ClickReceived;
         _warehouse.ChangeCount -= _resourceUI.ChangeText;
-        _warehouse.ChangeCount -= _creator.TryCreateNew;
+        _warehouse.ChangeCount -= _creator.CreateNew;
     }
 
     private void Start()
@@ -74,11 +74,8 @@ public class Fort : MonoBehaviour
 
         while (enabled)
         {
-            if (_taskDispatcher.HasAvailableBots() == false)
-            {
-                var items = _visor.Search();
-                _taskDispatcher.DistributeTask(items);
-            }
+            var items = _visor.Search();
+            _taskDispatcher.DistributeTask(items);
 
             yield return wait;
 

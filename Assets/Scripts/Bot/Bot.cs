@@ -8,11 +8,10 @@ public class Bot : MonoBehaviour
     private BotMoverToPosition _mover;
     private BotHolder _holder;
 
-    private Flag _selectedFlag;
-    private Item _selectedItem;
-    private FortWarehouse _selectedWarehouse;
+    public Item SelectedItem { get; private set; }
+    public BotState State { get; private set; } = BotState.None;
 
-    public event Action<Bot> ItemCollected;
+    public event Action<Bot> TaskCompleted;
 
     private void Awake()
     {
@@ -22,61 +21,47 @@ public class Bot : MonoBehaviour
 
     private void OnEnable()
     {
-        _mover.BotArrived += BotArrived;
+        _mover.BotArrived += Arrived;
     }
 
     private void OnDisable()
     {
-        _mover.BotArrived -= BotArrived;
-    }
-
-    public void MoveToFlag(Flag flag)
-    {
-        _selectedFlag = flag;
-        _mover.MoveTo(flag.transform.position);
+        _mover.BotArrived -= Arrived;
     }
 
     public void UpdateTargetPosition(Item item)
     {
-        _selectedItem = item;
-        _mover.MoveTo(_selectedItem.transform.position);
+        State = BotState.MoveToItem;
+
+        SelectedItem = item;
+        _mover.MoveTo(SelectedItem.transform.position);
     }
 
-    public void UpdateWarehousePosition(FortWarehouse fortWarehouse)
+    public void MoveTo(Vector3 position, BotState botState, Item item = null)
     {
-        _selectedWarehouse = fortWarehouse;
-        _mover.MoveTo(fortWarehouse.transform.position);
+        State = botState;
+        _mover.MoveTo(position);
+
+        if(item != null)
+            SelectedItem = item;
     }
 
-    private void BotArrived()
+    private void Arrived()
     {
-        if(_selectedFlag != null)
-        {
-            _selectedFlag.Build(this);
-            _selectedFlag = null;
-        }
-        else if(_selectedWarehouse == null)
-        {
-            _holder.TakeItem(_selectedItem);
-            ItemCollected?.Invoke(this);
-        }
-        else
-        {
-            _selectedItem.ClearOwner();
+        if (State == BotState.MoveToItem)
+            _holder.TakeItem(SelectedItem);
 
-            _selectedWarehouse.Add(_holder.GiveItem());
-            _selectedWarehouse = null;
-            _selectedItem = null;
-        }
+        TaskCompleted?.Invoke(this);
     }
 
-    public bool HaveItem()
+    public Item ClearItem()
     {
-        return _selectedItem != null;
+        SelectedItem = null;
+        return _holder.GiveItem();
     }
 
-    public bool HaveFlag()
+    public void ResetState()
     {
-        return _selectedFlag != null;
+        State = BotState.None;
     }
 }

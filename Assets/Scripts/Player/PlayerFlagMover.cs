@@ -9,6 +9,8 @@ public class PlayerFlagMover : MonoBehaviour
     [SerializeField] private Flag _flag;
     [SerializeField] private Camera _camera;
 
+    private Fort _selectedFort;
+
     public Flag Flag => _flag;
     public bool IsUnderConstruction { get; private set; }
     public bool IsActive => _flag.gameObject.activeInHierarchy;
@@ -30,13 +32,32 @@ public class PlayerFlagMover : MonoBehaviour
         Disable();
     }
 
-    public void Enable()
+    public void Create()
     {
-        _flag.gameObject.SetActive(true);
+        if (IsActive == false)
+            return;
+
+        IsUnderConstruction = true;
+        _selectedFort.CreateNewFort(Flag);
+    }
+
+    public void Enable(Fort fort)
+    {
+        if (IsUnderConstruction)
+            return;
+
+        if (fort.TotalUnits >= 1)
+        {
+            _selectedFort = fort;
+            _flag.gameObject.SetActive(true);
+        }
     }
 
     public void Disable()
     {
+        if (IsUnderConstruction)
+            return;
+
         _flag.gameObject.SetActive(false);
     }
 

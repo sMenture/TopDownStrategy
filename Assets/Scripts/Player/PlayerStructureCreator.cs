@@ -14,12 +14,9 @@ public class PlayerStructureCreator : MonoBehaviour
         _flagMover = flag;
 
         _flagMover.Flag.BuildFinish += FinishBuild;
-    }
 
-    private void OnEnable()
-    {
         foreach (var fort in _forts)
-            fort.Selection += ShowCreateMenu;
+            fort.Selection += _flagMover.Enable;
     }
 
     private void OnDisable()
@@ -27,37 +24,7 @@ public class PlayerStructureCreator : MonoBehaviour
         _flagMover.Flag.BuildFinish -= FinishBuild;
 
         foreach (var fort in _forts)
-            fort.Selection -= ShowCreateMenu;
-    }
-
-    public void CancelCreate()
-    {
-        if (_flagMover.IsUnderConstruction)
-            return;
-
-        _flagMover.Disable();
-    }
-
-    public void Create()
-    {
-        if (_flagMover.IsActive == false)
-            return;
-
-        _flagMover.SetupFlag();
-
-        _selectedFort.CreateNewFort(_flagMover.Flag);
-    }
-
-    private void ShowCreateMenu(Fort fort)
-    {
-        if (_flagMover.IsUnderConstruction)
-            return;
-
-        if (fort.TotalUnits >= 1)
-        {
-            _selectedFort = fort;
-            _flagMover.Enable();
-        }
+            fort.Selection -= _flagMover.Enable;
     }
 
     private void FinishBuild(Bot bot)
@@ -66,7 +33,9 @@ public class PlayerStructureCreator : MonoBehaviour
         fort.transform.position = _flagMover.Position;
 
         if(_selectedFort != null)
+        {
             _selectedFort.RemoveBot(bot);
+        }
 
         fort.AddBot(bot);
         _forts.Add(fort);
